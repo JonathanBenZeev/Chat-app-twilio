@@ -1,7 +1,8 @@
 import { useSelector } from 'react-redux'
 import { Client as ConversationsClient } from '@twilio/conversations'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { chatService } from '../services/chat.service'
+import { AppHeader } from '../cmps/AppHeader'
 
 export function ChatApp() {
   const loggedInUser = useSelector((storeState) => storeState.userModule.user)
@@ -10,6 +11,14 @@ export function ChatApp() {
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [token, setToken] = useState(null)
+  const messageContainerRef = useRef(null)
+
+  useEffect(() => {
+    if (messageContainerRef.current) {
+      messageContainerRef.current.scrollTop =
+        messageContainerRef.current.scrollHeight
+    }
+  }, [messages])
 
   useEffect(() => {
     if (!loggedInUser) {
@@ -62,23 +71,23 @@ export function ChatApp() {
     try {
       // **how to create a conversation**
       // await client.createConversation({
-      //     uniqueName: 'test8'
+      //     uniqueName: 'test20'
       // });
 
       // **how to join a conversation **
-      const conversation = await client.getConversationByUniqueName('test8')
+      const conversation = await client.getConversationByUniqueName('test20')
       setConversation(conversation)
 
       //**How to add users to conversation **
       // try {
-      //     await conversation.add('yoyo bu');
+      //     await conversation.add('asf');
       //     console.log('Participant added');
       // } catch (err) {
       //     console.error('Error adding participant:', err);
       // }
 
       if (!conversation) {
-        await conversation.join();
+        await conversation.join()
       }
 
       try {
@@ -103,18 +112,36 @@ export function ChatApp() {
       }
     }
   }
- 
-  console.log(loggedInUser);
+
   return (
-    <section className='chat'>
-      <div>
-        <div>
-          {messages.map((message, index) => (
-            <p key={index}>
-              {message.author} : {message.body}
-            </p>
-          ))}
-        </div>
+    <section className='chat-app'>
+      <header>
+        <AppHeader/>
+      </header>
+      <div className='message-area' ref={messageContainerRef}>
+        {messages.map((message, index) => (
+          <div
+            key={index}
+            className={
+              message.author === loggedInUser.fullname
+                ? 'message sent'
+                : 'message received'
+            }
+          >
+            {message.author !== loggedInUser.fullname && (
+              <div className='message-author'>{message.author}</div>
+            )}
+            <p>{message.body}</p>
+            <span className='timestamp'>
+              {new Date(message.dateCreated).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className='input-area'>
         <input
           type='text'
           value={newMessage}
@@ -124,5 +151,23 @@ export function ChatApp() {
         <button onClick={sendMessage}>Send</button>
       </div>
     </section>
+    // <section className='chat-app'>
+    //   <div>
+    //     <div>
+    //       {messages.map((message, index) => (
+    //         <p key={index}>
+    //           {message.author} : {message.body}
+    //         </p>
+    //       ))}
+    //     </div>
+    //     <input
+    //       type='text'
+    //       value={newMessage}
+    //       onChange={(e) => setNewMessage(e.target.value)}
+    //       placeholder='Type your message'
+    //     />
+    //     <button onClick={sendMessage}>Send</button>
+    //   </div>
+    // </section>
   )
 }

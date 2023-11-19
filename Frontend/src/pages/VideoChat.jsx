@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import Video from 'twilio-video'
 import { chatService } from '../services/chat.service'
+import { FaVideo, FaVideoSlash } from 'react-icons/fa'
+import { FaMicrophone, FaMicrophoneLinesSlash } from 'react-icons/fa6'
+import { AppHeader } from '../cmps/AppHeader'
 
 export function VideoChat() {
   const loggedInUser = useSelector((storeState) => storeState.userModule.user)
@@ -19,17 +22,14 @@ export function VideoChat() {
   useEffect(() => {
     async function joinVideoRoom() {
       const { token } = await chatService.getToken(loggedInUser.fullname) // Fetch the token from your server
-
       try {
         const room = await Video.connect(token, {
           name: 'my-room-name',
           audio: true,
           video: true,
         })
-
         setRoom(room)
         if (!localMediaAvailable) setLocalMediaAvailable(true)
-
         room.localParticipant.tracks.forEach((publication) => {
           if (publication.track) {
             localMediaRef.current.appendChild(publication.track.attach())
@@ -74,24 +74,24 @@ export function VideoChat() {
 
   const toggleAudio = () => {
     if (localAudioTrackRef.current) {
-      const isEnabled = localAudioTrackRef.current.isEnabled
-      localAudioTrackRef.current.enable(!isEnabled)
-      setIsAudioMuted(!isEnabled)
+      const isCurrentlyEnabled = localAudioTrackRef.current.isEnabled
+      localAudioTrackRef.current.enable(!isCurrentlyEnabled)
+      setIsAudioMuted(isCurrentlyEnabled) // Change this line
     }
   }
 
   const toggleVideo = () => {
     if (localVideoTrackRef.current) {
-      const isEnabled = localVideoTrackRef.current.isEnabled
-      localVideoTrackRef.current.enable(!isEnabled)
-      setIsVideoEnabled(isEnabled)
+      const isCurrentlyEnabled = localVideoTrackRef.current.isEnabled
+      localVideoTrackRef.current.enable(!isCurrentlyEnabled)
+      setIsVideoEnabled(!isCurrentlyEnabled) // Change this line
     }
   }
 
   const participantConnected = (participant) => {
     participant.tracks.forEach((publication) => {
       if (publication.isSubscribed) {
-        const {track} = publication
+        const { track } = publication
         addTrack(track, participant)
       }
     })
@@ -128,21 +128,29 @@ export function VideoChat() {
   }
 
   return (
-    <div>
-      <div ref={localMediaRef} />
+    <div className='video-chat'>
+      <header>
+        {/* <h1>Chat Room</h1> */}
+        <AppHeader />
+      </header>
+      <div className='video-wrapper' ref={localMediaRef}>
+        <div className='controls'>
+          <button onClick={toggleAudio}>
+            {isAudioMuted ? <FaMicrophoneLinesSlash /> : <FaMicrophone />}
+          </button>
+          <button onClick={toggleVideo}>
+            {isVideoEnabled ? <FaVideo /> : <FaVideoSlash />}
+          </button>
+          <button onClick={leaveRoom}>Leave Room</button>
+        </div>
+      </div>
       {remoteParticipants.map((participant) => (
         <div
+          className='video-wrapper'
           key={participant.sid}
           ref={(el) => (remoteMediaRef.current[participant.sid] = el)}
-        />
+        ></div>
       ))}
-      <button onClick={toggleAudio}>
-        {isAudioMuted ? 'Unmute' : 'Mute'} Audio
-      </button>
-      <button onClick={toggleVideo}>
-        {isVideoEnabled ? 'Hide' : 'Show'} Video
-      </button>
-      <button onClick={leaveRoom}>Leave Room</button>
     </div>
   )
 }

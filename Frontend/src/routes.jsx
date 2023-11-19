@@ -19,6 +19,7 @@ const routes = [
     component: <VideoChat />,
     label: 'Video chat',
   },
+
 ]
 
 export default routes
