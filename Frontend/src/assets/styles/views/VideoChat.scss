@@ -25,6 +25,19 @@
         height: 100%;
         object-fit: cover;
       }
+      .name-tag {
+        position: absolute;
+        bottom: 10px;  /* Adjust the position as needed */
+        left: 10px;    /* Adjust for the name to appear on the left side */
+        color: white;  /* Choose a color that is visible on your video */
+        background-color: rgba(0, 0, 0, 0.5); /* Optional: for better visibility */
+        padding: 5px;
+        border-radius: 5px;
+      }
+      
+      .participant-container {
+        position: relative; /* This is important for absolute positioning of name tags */
+      }
   
       .controls {
         position: absolute;

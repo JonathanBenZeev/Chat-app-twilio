@@ -108,7 +108,6 @@
       border-radius: 10px;
       word-wrap: break-word;
       &.sent {
-        // background-color: #DCF8C6;
         color: #4a4a4a;
         align-self: flex-end;
         background-color: #c6eff8;
@@ -116,11 +115,10 @@
 
       &.received {
         align-self: flex-start;
-        // background-color: white;
         background-color: #fff;
         color: #303030;
       }
-
+      
       .timestamp {
         display: block;
         text-align: right;

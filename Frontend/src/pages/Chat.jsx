@@ -71,16 +71,16 @@ export function ChatApp() {
     try {
       // **how to create a conversation**
       // await client.createConversation({
-      //     uniqueName: 'test20'
+      //     uniqueName: 'Meeting'
       // });
 
       // **how to join a conversation **
-      const conversation = await client.getConversationByUniqueName('test20')
+      const conversation = await client.getConversationByUniqueName('Meeting')
       setConversation(conversation)
 
       //**How to add users to conversation **
       // try {
-      //     await conversation.add('asf');
+      //     await conversation.add('Alon');
       //     console.log('Participant added');
       // } catch (err) {
       //     console.error('Error adding participant:', err);

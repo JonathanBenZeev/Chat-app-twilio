@@ -41,7 +41,10 @@ export function VideoChat() {
             }
           }
         })
-
+        const localNameTag = document.createElement('div');
+        localNameTag.className = 'name-tag';
+        localNameTag.innerText = loggedInUser.fullname; // Or any name you wish to display
+        localMediaRef.current.appendChild(localNameTag);
         room.participants.forEach(participantConnected)
         room.on('participantConnected', participantConnected)
         room.on('participantDisconnected', participantDisconnected)
@@ -110,12 +113,30 @@ export function VideoChat() {
     ])
   }
 
+  // const addTrack = (track, participant) => {
+  //   if (!remoteMediaRef.current[participant.sid]) {
+  //     remoteMediaRef.current[participant.sid] = document.createElement('div')
+  //   }
+  //   remoteMediaRef.current[participant.sid].appendChild(track.attach())
+  // }
   const addTrack = (track, participant) => {
-    if (!remoteMediaRef.current[participant.sid]) {
-      remoteMediaRef.current[participant.sid] = document.createElement('div')
+    let participantContainer = remoteMediaRef.current[participant.sid];
+    if (!participantContainer) {
+      participantContainer = document.createElement('div');
+      participantContainer.className = 'participant-container'; // Add a class for styling
+      remoteMediaRef.current[participant.sid] = participantContainer;
     }
-    remoteMediaRef.current[participant.sid].appendChild(track.attach())
-  }
+    const nameTag = document.createElement('div');
+    nameTag.className = 'name-tag'; // Add a class for styling
+    nameTag.innerText = participant.identity; // Assuming the identity is the name you want to display
+  
+    // Append the name tag and the video track to the participant container
+    participantContainer.appendChild(nameTag);
+    participantContainer.appendChild(track.attach());
+  
+    // Append the participant container to the DOM, wherever you want it to appear
+    // For example, append it to a main container in your component
+  };
 
   const removeTrack = (track) => {
     track.detach().forEach((element) => element.remove())
